@@ -3,10 +3,10 @@ use telecom_customer_churn;
 CREATE TABLE Telecom_customer_churn (
     customerID VARCHAR(50) PRIMARY KEY,
     gender VARCHAR(10),
-    SeniorCitizen TINYINT,          -- 0 ya 1 ke liye TINYINT best hai
+    SeniorCitizen TINYINT,          
     Partner VARCHAR(5),
     Dependents VARCHAR(5),
-    tenure INT,                     -- Numeric count
+    tenure INT,                     
     PhoneService VARCHAR(5),
     MultipleLines VARCHAR(20),
     InternetService VARCHAR(20),
@@ -19,8 +19,8 @@ CREATE TABLE Telecom_customer_churn (
     Contract VARCHAR(20),
     PaperlessBilling VARCHAR(5),
     PaymentMethod VARCHAR(50),
-    MonthlyCharges DECIMAL(10, 2),  -- Currency/Decimal values ke liye
-    TotalCharges DECIMAL(10, 2),    -- Numerical analysis ke liye DECIMAL(10,2) sahi hai (agar blanks handle ho jayein)
+    MonthlyCharges DECIMAL(10, 2),  
+    TotalCharges DECIMAL(10, 2),   
     numAdminTickets INT,
     Churn VARCHAR(5)
 );
@@ -37,7 +37,7 @@ Before analyzing customer churn, we need to make sure
 the dataset is complete, unique and suitable for analysis.
 
 Dataset: Telecom Customer Churn
-Table: CustomerChurn
+Table: Telecom_customer_churn
 ==========================================================
 */
 
