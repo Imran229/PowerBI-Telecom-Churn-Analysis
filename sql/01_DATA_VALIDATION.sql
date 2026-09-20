@@ -51,7 +51,7 @@ Table: Telecom_customer_churn
 SELECT
     COUNT(*) AS Total_Records,
     COUNT(DISTINCT customerID) AS Unique_Customers
-FROM CustomerChurn;
+FROM Telecom_customer_churn;
 
 
 -- ========================================================
@@ -64,7 +64,7 @@ FROM CustomerChurn;
 SELECT
     customerID,
     COUNT(*) AS Record_Count
-FROM CustomerChurn
+FROM Telecom_customer_churn
 GROUP BY customerID
 HAVING COUNT(*) > 1;
 
@@ -78,7 +78,7 @@ HAVING COUNT(*) > 1;
 
 SELECT
     COUNT(*) AS Missing_TotalCharges
-FROM CustomerChurn
+FROM Telecom_customer_churn
 WHERE TotalCharges IS NULL
    OR LTRIM(RTRIM(TotalCharges)) = '';
 
@@ -95,7 +95,7 @@ SELECT
     MonthlyCharges,
     TotalCharges,
     Churn
-FROM CustomerChurn
+FROM Telecom_customer_churn
 WHERE TotalCharges IS NULL
    OR LTRIM(RTRIM(TotalCharges)) = '';
 
@@ -109,7 +109,7 @@ WHERE TotalCharges IS NULL
 SELECT
     Churn,
     COUNT(*) AS Customer_Count
-FROM CustomerChurn
+FROM Telecom_customer_churn
 GROUP BY Churn;
 
 
@@ -124,5 +124,5 @@ SELECT
     MAX(tenure) AS Maximum_Tenure,
     MIN(MonthlyCharges) AS Minimum_MonthlyCharges,
     MAX(MonthlyCharges) AS Maximum_MonthlyCharges
-FROM CustomerChurn;
+FROM Telecom_customer_churn;
 
