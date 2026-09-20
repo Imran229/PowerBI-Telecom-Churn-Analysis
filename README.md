@@ -12,19 +12,19 @@ This project analyzes ~7,000 telecom customer records to identify which customer
 - **$16.06M** total historical revenue, of which **$2.86M (17.83%)** is associated with churned customers
 
 ## Repository Structure
-├── Telecom_Customer_Churn_Analysis.pbix # Power BI dashboard (source file)
-├── Telecom Customer churn dataset.csv # Raw dataset
-├── sql/
-│ ├── 01_DATA_VALIDATION.sql # Row counts, duplicates, nulls, range checks
-│ ├── 02 - CUSTOMER_CHURN _ANALYSIS.sql # Overall churn, churn by contract/tenure/demographics
-│ ├── 03 - CUSTOMER SEGMENT ANALYSIS.sql # Churn by service type, security, support, payment method
-│ └── 04 - REVENUE IMPACT ANALYSIS.sql # Total/churned revenue by contract and service type
-└── screenshots/
-├── 01_Executive_Overview.png
-├── 02_Customer_Demograpics.png
-├── 03_Service_Based_Churn.png
-└── 04_Revenue_Impact.png
 
+- `Telecom_Customer_Churn_Analysis.pbix` — Power BI dashboard (source file)
+- `Telecom Customer churn dataset.csv` — Raw dataset
+- `sql/`
+  - `01_DATA_VALIDATION.sql` — Row counts, duplicates, nulls, range checks
+  - `02 - CUSTOMER_CHURN _ANALYSIS.sql` — Overall churn, churn by contract/tenure/demographics
+  - `03 - CUSTOMER SEGMENT ANALYSIS.sql` — Churn by service type, security, support, payment method
+  - `04 - REVENUE IMPACT ANALYSIS.sql` — Total/churned revenue by contract and service type
+- `screenshots/`
+  - `01_Executive_Overview.png`
+  - `02_Customer_Demograpics.png`
+  - `03_Service_Based_Churn.png`
+  - `04_Revenue_Impact.png`
 
 
 All SQL scripts run against a table named `Telecom_customer_churn`, created in `01_DATA_VALIDATION.sql`.
