@@ -24,58 +24,30 @@ This analysis supports:
 SELECT
     COUNT(*) AS Total_Customers,
 
-    SUM(CASE
-        WHEN Churn = 'Yes' THEN 1
-        ELSE 0
-    END) AS Churned_Customers,
+    SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) AS Churned_Customers,
 
-    SUM(CASE
-        WHEN Churn = 'No' THEN 1
-        ELSE 0
-    END) AS Retained_Customers,
+    SUM(CASE WHEN Churn = 'No' THEN 1 ELSE 0 END) AS Retained_Customers,
 
     ROUND(
-        100.0 *
-        SUM(CASE
-            WHEN Churn = 'Yes' THEN 1
-            ELSE 0
-        END) / COUNT(*),
+        100.0 * SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) / COUNT(*),
         2
     ) AS Churn_Rate_Percent
 
-FROM CustomerChurn
-WHERE TRY_CAST(NULLIF(LTRIM(RTRIM(TotalCharges)), '') AS DECIMAL(18,2))
-      IS NOT NULL;
+FROM Telecom_customer_churn
+WHERE TRIM(TotalCharges) <> '';
 
 
+-- ========================================================
 -- ========================================================
 -- 2. Churn by Contract Type
 -- ========================================================
--- Business Question:
--- Which contract types have higher observed churn?
-
 SELECT
     Contract,
     COUNT(*) AS Total_Customers,
-
-    SUM(CASE
-        WHEN Churn = 'Yes' THEN 1
-        ELSE 0
-    END) AS Churned_Customers,
-
-    ROUND(
-        100.0 *
-        SUM(CASE
-            WHEN Churn = 'Yes' THEN 1
-            ELSE 0
-        END) / COUNT(*),
-        2
-    ) AS Churn_Rate_Percent
-
-FROM CustomerChurn
-WHERE TRY_CAST(NULLIF(LTRIM(RTRIM(TotalCharges)), '') AS DECIMAL(18,2))
-      IS NOT NULL
-
+    SUM(Churn = 'Yes') AS Churned_Customers,
+    ROUND(100.0 * SUM(Churn = 'Yes') / COUNT(*), 2) AS Churn_Rate_Percent
+FROM Telecom_customer_churn
+WHERE TRIM(TotalCharges) <> ''
 GROUP BY Contract
 ORDER BY Churn_Rate_Percent DESC;
 
@@ -83,10 +55,9 @@ ORDER BY Churn_Rate_Percent DESC;
 -- ========================================================
 -- 3. Churn by Tenure Group
 -- ========================================================
--- Business Question:
--- Are newer customers showing different churn rates
--- compared with longer-tenure customers?
-
+-- ========================================================
+-- 3. Churn by Tenure Group (Fixed for ONLY_FULL_GROUP_BY)
+-- ========================================================
 SELECT
     CASE
         WHEN tenure <= 12 THEN '0-12 Months'
@@ -94,104 +65,79 @@ SELECT
         WHEN tenure <= 48 THEN '25-48 Months'
         ELSE '49-72 Months'
     END AS Tenure_Group,
-
+    
     COUNT(*) AS Total_Customers,
-
-    SUM(CASE
-        WHEN Churn = 'Yes' THEN 1
-        ELSE 0
-    END) AS Churned_Customers,
-
-    ROUND(
-        100.0 *
-        SUM(CASE
-            WHEN Churn = 'Yes' THEN 1
-            ELSE 0
-        END) / COUNT(*),
-        2
-    ) AS Churn_Rate_Percent
-
-FROM CustomerChurn
-WHERE TRY_CAST(NULLIF(LTRIM(RTRIM(TotalCharges)), '') AS DECIMAL(18,2))
-      IS NOT NULL
-
-GROUP BY
-    CASE
-        WHEN tenure <= 12 THEN '0-12 Months'
-        WHEN tenure <= 24 THEN '13-24 Months'
-        WHEN tenure <= 48 THEN '25-48 Months'
-        ELSE '49-72 Months'
-    END
-
-ORDER BY
-    CASE
-        WHEN tenure <= 12 THEN 1
-        WHEN tenure <= 24 THEN 2
-        WHEN tenure <= 48 THEN 3
-        ELSE 4
-    END;
+    SUM(Churn = 'Yes') AS Churned_Customers,
+    ROUND(100.0 * SUM(Churn = 'Yes') / COUNT(*), 2) AS Churn_Rate_Percent
+FROM Telecom_customer_churn
+WHERE TRIM(TotalCharges) <> ''
+GROUP BY Tenure_Group
+ORDER BY MIN(tenure);
 
 
 -- ========================================================
 -- 4. Churn by Customer Demographics
 -- ========================================================
--- Business Question:
--- How does churn differ across gender, senior citizen,
--- partner and dependent status?
-
-SELECT
-    gender,
-    SeniorCitizen,
-    Partner,
-    Dependents,
-
+-- Gender  impact
+SELECT 
+    'Gender' AS Demographic_Factor, 
+    gender AS Category, 
     COUNT(*) AS Total_Customers,
+    SUM(Churn = 'Yes') AS Churned_Customers,
+    ROUND(100.0 * SUM(Churn = 'Yes') / COUNT(*), 2) AS Churn_Rate_Percent
+FROM Telecom_customer_churn
+WHERE TRIM(TotalCharges) <> ''
+GROUP BY gender
 
-    SUM(CASE
-        WHEN Churn = 'Yes' THEN 1
-        ELSE 0
-    END) AS Churned_Customers,
+UNION ALL
 
-    ROUND(
-        100.0 *
-        SUM(CASE
-            WHEN Churn = 'Yes' THEN 1
-            ELSE 0
-        END) / COUNT(*),
-        2
-    ) AS Churn_Rate_Percent
+-- 
+SELECT 
+    'Senior Citizen', 
+    CASE WHEN SeniorCitizen = 1 THEN 'Yes' ELSE 'No' END,
+    COUNT(*),
+    SUM(Churn = 'Yes'),
+    ROUND(100.0 * SUM(Churn = 'Yes') / COUNT(*), 2)
+FROM Telecom_customer_churn
+WHERE TRIM(TotalCharges) <> ''
+GROUP BY SeniorCitizen
 
-FROM CustomerChurn
-WHERE TRY_CAST(NULLIF(LTRIM(RTRIM(TotalCharges)), '') AS DECIMAL(18,2))
-      IS NOT NULL
+UNION ALL
 
-GROUP BY
-    gender,
-    SeniorCitizen,
-    Partner,
-    Dependents
+-- impact on Partner 
+SELECT 
+    'Partner', 
+    Partner, 
+    COUNT(*),
+    SUM(Churn = 'Yes'),
+    ROUND(100.0 * SUM(Churn = 'Yes') / COUNT(*), 2)
+FROM Telecom_customer_churn
+WHERE TRIM(TotalCharges) <> ''
+GROUP BY Partner
 
-ORDER BY Churn_Rate_Percent DESC;
+UNION ALL
+
+-- Impact on Dependents 
+SELECT 
+    'Dependents', 
+    Dependents, 
+    COUNT(*),
+    SUM(Churn = 'Yes'),
+    ROUND(100.0 * SUM(Churn = 'Yes') / COUNT(*), 2)
+FROM Telecom_customer_churn
+WHERE TRIM(TotalCharges) <> ''
+GROUP BY Dependents
+
+ORDER BY Demographic_Factor, Churn_Rate_Percent DESC;
 
 
 -- ========================================================
 -- 5. Average Tenure by Churn Status
 -- ========================================================
--- Business Question:
--- Do churned customers have different average tenure
--- compared with retained customers?
-
 SELECT
     Churn,
     COUNT(*) AS Customer_Count,
-
-    ROUND(
-        AVG(CAST(tenure AS DECIMAL(10,2))),
-        2
-    ) AS Average_Tenure_Months
-
-FROM CustomerChurn
-WHERE TRY_CAST(NULLIF(LTRIM(RTRIM(TotalCharges)), '') AS DECIMAL(18,2))
-      IS NOT NULL
-
+    ROUND(AVG(tenure), 2) AS Average_Tenure_Months
+FROM Telecom_customer_churn
+WHERE TRIM(TotalCharges) <> ''
 GROUP BY Churn;
